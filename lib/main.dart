@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'dart:async';
 // import 'package:vibrate/vibrate.dart';
 
 import 'dart:io';
@@ -171,6 +172,8 @@ class Note {
 
 class _ThirdScreenState extends State<ThirdScreen> {
   List<Note> items;
+  StreamSubscription<Event> _onNoteAddedSubscription;
+  StreamSubscription<Event> _onNoteChangedSubscription;
 
   @override
   Widget build(BuildContext context) {
