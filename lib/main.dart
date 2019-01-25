@@ -10,7 +10,7 @@ import 'dart:io';
 
 void main() => runApp(MyApp());
 
-final mainReference = FirebaseDatabase.instance.reference().child('sas');
+final mainReference = FirebaseDatabase.instance.reference();
 
 class MyApp extends StatelessWidget {
   @override
@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
     List<Post> st = new List();
     st.add(new Post("大头", "test"));
     st.add(new Post("呵呵", "程言哲"));
+    st.add(new Post("title", "subtitle"));
+    st.add(new Post("Random", "random"));
     st.add(new Post("Map", "Show Map"));
-    st.add(new Post("Food", "Find Food"));
-    st.add(new Post("Bus", "Find Bus Stops"));
     st.add(new Post("Really?", "yanzhe"));
     st.add(new Post("Okay", "another"));
 
@@ -35,17 +35,7 @@ class MyApp extends StatelessWidget {
         body: ListView.builder(
           itemBuilder: (BuildContext context, int index) {
             var post = st[index];
-            var ic = Icon(Icons.phone);
-            switch(post.ti) {
-              case "Map":
-                ic = Icon(Icons.map); break;
-              case "Food":
-                ic = Icon(Icons.fastfood); break;
-              case "Bus":
-                ic = Icon(Icons.directions_bus); break;
-              default:
-                ic = Icon(Icons.phone);
-            }
+            var ic = post.ti != "Map" ? Icon(Icons.phone) : Icon(Icons.map);
 
             return ListTile(
               leading: ic,
@@ -92,7 +82,12 @@ class MyApp extends StatelessWidget {
         ),
       );
     } else if (post.content == "another") {
-
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ThirdScreen(),
+        ),
+      );
     } else {
       showDialog(
         context: context,
@@ -151,40 +146,92 @@ class Post {
 }
 
 class Note {
-  String name;
-  String value;
+  String _name;
+  String _value;
 
-  Note(this.name, this.value);
+  Note(this._name, this._value);
 
   Note.map(dynamic obj) {
-    this.name = obj["name"];
-    this.value = obj["value"];
+    this._name = obj["name"];
+    this._value = obj["value"];
   }
 
-  String get aname => name;
-  String get avalue => value;
+  String get name => _name;
+  String get value => _value;
 
   Note.fromSnapshot(DataSnapshot snapshot) {
-    name = snapshot.value["name"];
-    value = snapshot.value["value"];
+    print(snapshot.key);
+    print(snapshot.value);
+    // print(snapshot.value[snapshot.key]);
+    _name = snapshot.key;
+    _value = snapshot.value.toString();
+    // _name = snapshot.value["name"];
+    // _value = snapshot.value["value"];
   }
 }
 
 class _ThirdScreenState extends State<ThirdScreen> {
   List<Note> items;
   StreamSubscription<Event> _onNoteAddedSubscription;
-  StreamSubscription<Event> _onNoteChangedSubscription;
+  // StreamSubscription<Event> _onNoteChangedSubscription;
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Third Screen"),
+      ),
+      body: Center(
+        child: ListView.builder(
+          itemBuilder: (BuildContext context, int index) {
+            var node = items[index];
+            var ic = Icon(Icons.assignment);
+            // var ic = post.ti != "Map" ? Icon(Icons.phone) : Icon(Icons.map);
 
+            return ListTile(
+              leading: ic,
+              title: Text(node.name),
+              subtitle: Text(node.value),
+              // onTap: () => onTapped(post, context),
+            );
+          },
+          itemCount: items.length,
+        ),
+      ),
+    );
   }
 
   @override
   void initState() {
     super.initState();
-
+    items = new List();
+ 
+    _onNoteAddedSubscription = mainReference.onChildAdded.listen(_onNoteAdded);
+    // _onNoteChangedSubscription = mainReference.onChildChanged.listen(_onNoteUpdated);
   }
+
+  @override
+  void dispose() {
+    _onNoteAddedSubscription.cancel();
+    // _onNoteChangedSubscription.cancel();
+    super.dispose();
+  }
+
+  void _onNoteAdded(Event event) {
+    setState(() {
+      // print(event.snapshot);
+      var t = new Note.fromSnapshot(event.snapshot);
+      // print(t.name);
+      items.add(new Note.fromSnapshot(event.snapshot));
+    });
+  }
+ 
+  // void _onNoteUpdated(Event event) {
+  //   var oldNoteValue = items.singleWhere((note) => note.id == event.snapshot.key);
+  //   setState(() {
+  //     items[items.indexOf(oldNoteValue)] = new Note.fromSnapshot(event.snapshot);
+  //   });
+  // }
 }
 
 class ThirdScreen extends StatefulWidget {
