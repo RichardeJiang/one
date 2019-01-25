@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
     List<Post> st = new List();
     st.add(new Post("大头", "test"));
     st.add(new Post("呵呵", "程言哲"));
-    st.add(new Post("title", "subtitle"));
-    st.add(new Post("Random", "random"));
     st.add(new Post("Map", "Show Map"));
+    st.add(new Post("Food", "Find Food"));
+    st.add(new Post("Bus", "Find Bus Stops"));
     st.add(new Post("Really?", "yanzhe"));
     st.add(new Post("Okay", "another"));
 
@@ -35,7 +35,17 @@ class MyApp extends StatelessWidget {
         body: ListView.builder(
           itemBuilder: (BuildContext context, int index) {
             var post = st[index];
-            var ic = post.ti != "Map" ? Icon(Icons.phone) : Icon(Icons.map);
+            var ic = Icon(Icons.phone);
+            switch(post.ti) {
+              case "Map":
+                ic = Icon(Icons.map); break;
+              case "Food":
+                ic = Icon(Icons.fastfood); break;
+              case "Bus":
+                ic = Icon(Icons.directions_bus); break;
+              default:
+                ic = Icon(Icons.phone);
+            }
 
             return ListTile(
               leading: ic,
@@ -82,7 +92,7 @@ class MyApp extends StatelessWidget {
         ),
       );
     } else if (post.content == "another") {
-    
+
     } else {
       showDialog(
         context: context,
@@ -167,7 +177,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
+
   }
 
   @override
