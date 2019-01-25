@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'dart:async';
 // import 'package:vibrate/vibrate.dart';
 
 import 'dart:io';
 // import 'package:english_words/english_words.dart';
 
 void main() => runApp(MyApp());
+
+final mainReference = FirebaseDatabase.instance.reference().child('sas');
 
 class MyApp extends StatelessWidget {
   @override
@@ -19,6 +23,8 @@ class MyApp extends StatelessWidget {
     st.add(new Post("title", "subtitle"));
     st.add(new Post("Random", "random"));
     st.add(new Post("Map", "Show Map"));
+    st.add(new Post("Really?", "yanzhe"));
+    st.add(new Post("Okay", "another"));
 
     return MaterialApp(
       title: title,
@@ -75,6 +81,8 @@ class MyApp extends StatelessWidget {
           builder: (context) => MapScreen(),
         ),
       );
+    } else if (post.content == "another") {
+    
     } else {
       showDialog(
         context: context,
@@ -132,6 +140,50 @@ class Post {
   Post(this.ti, this.content);
 }
 
+class Note {
+  String name;
+  String value;
+
+  Note(this.name, this.value);
+
+  Note.map(dynamic obj) {
+    this.name = obj["name"];
+    this.value = obj["value"];
+  }
+
+  String get aname => name;
+  String get avalue => value;
+
+  Note.fromSnapshot(DataSnapshot snapshot) {
+    name = snapshot.value["name"];
+    value = snapshot.value["value"];
+  }
+}
+
+class _ThirdScreenState extends State<ThirdScreen> {
+  List<Note> items;
+  StreamSubscription<Event> _onNoteAddedSubscription;
+  StreamSubscription<Event> _onNoteChangedSubscription;
+
+  @override
+  Widget build(BuildContext context) {
+    
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+  }
+}
+
+class ThirdScreen extends StatefulWidget {
+  // ThirdScreen(): super();
+  @override
+  _ThirdScreenState createState() => _ThirdScreenState();
+
+}
+
 class SecondScreen extends StatelessWidget {
 
   final String content;
@@ -148,7 +200,7 @@ class SecondScreen extends StatelessWidget {
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget> [
-            Text("揍他！",
+            Text("揍他哈！",
               style: new TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10.0), // the standard way fo doing this should be wrapping it around Padding widget
