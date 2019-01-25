@@ -17,14 +17,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = 'CS8803 MAS';
 
-    List<Post> st = new List();
-    st.add(new Post("大头", "test"));
-    st.add(new Post("呵呵", "程言哲"));
-    st.add(new Post("title", "subtitle"));
-    st.add(new Post("Random", "random"));
-    st.add(new Post("Map", "Show Map"));
-    st.add(new Post("Really?", "yanzhe"));
-    st.add(new Post("Okay", "another"));
+    List<Post> st = List.of([
+      new Post("大头", "test"),
+      new Post("呵呵", "程言哲"),
+      new Post("Map", "Show Map"),
+      new Post("Food", "Find Food"),
+      new Post("Bus", "Find Bus Stops"),
+      new Post("Really?", "yanzhe"),
+      new Post("Okay", "another")
+    ]);
 
     return MaterialApp(
       title: title,
@@ -35,7 +36,17 @@ class MyApp extends StatelessWidget {
         body: ListView.builder(
           itemBuilder: (BuildContext context, int index) {
             var post = st[index];
-            var ic = post.ti != "Map" ? Icon(Icons.phone) : Icon(Icons.map);
+            Icon ic;
+            switch(post.ti) {
+              case "Map":
+                ic = Icon(Icons.map); break;
+              case "Food":
+                ic = Icon(Icons.fastfood); break;
+              case "Bus":
+                ic = Icon(Icons.directions_bus); break;
+              default:
+                ic = Icon(Icons.phone);
+            }
 
             return ListTile(
               leading: ic,
@@ -205,7 +216,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
   void initState() {
     super.initState();
     items = new List();
- 
+
     _onNoteAddedSubscription = mainReference.onChildAdded.listen(_onNoteAdded);
     // _onNoteChangedSubscription = mainReference.onChildChanged.listen(_onNoteUpdated);
   }
@@ -225,7 +236,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
       items.add(new Note.fromSnapshot(event.snapshot));
     });
   }
- 
+
   // void _onNoteUpdated(Event event) {
   //   var oldNoteValue = items.singleWhere((note) => note.id == event.snapshot.key);
   //   setState(() {
